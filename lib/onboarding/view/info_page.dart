@@ -27,7 +27,7 @@ class InfoPage extends StatelessWidget {
     Future<void> startTwenty() async {
       Settings.completedOnboarding.value = true;
       context.read<RuleBloc>().add(const RuleStarted());
-      context.read<NotificationRepository>().showInfoNotification();
+      await context.read<NotificationRepository>().showInfoNotification();
 
       try {
         await launchAtStartup.enable();
