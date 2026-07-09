@@ -18,10 +18,10 @@ class ToastContent extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(100),
             color: color,
-            border: Border.all(color: Colors.black.withOpacity(0.2)),
+            border: Border.all(color: Colors.black.withValues(alpha: 0.2)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.14),
+                color: Colors.black.withValues(alpha: 0.14),
                 blurRadius: 16,
                 offset: const Offset(0, 8),
               ),
