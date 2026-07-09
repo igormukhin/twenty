@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:fluid_animations/fluid_animations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,11 +24,20 @@ class InfoPage extends StatelessWidget {
     final style =
         FluentTheme.of(context).typography.body!.copyWith(fontSize: 16);
 
-    void startTwenty() {
+    Future<void> startTwenty() async {
       Settings.completedOnboarding.value = true;
       context.read<RuleBloc>().add(const RuleStarted());
       context.read<NotificationRepository>().showInfoNotification();
-      launchAtStartup.enable();
+
+      try {
+        await launchAtStartup.enable();
+      } on Object catch (error, stackTrace) {
+        log(
+          'Failed to enable launch at startup',
+          error: error,
+          stackTrace: stackTrace,
+        );
+      }
     }
 
     return Column(

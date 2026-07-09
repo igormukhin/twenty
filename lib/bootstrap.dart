@@ -44,11 +44,18 @@ Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
   // enable launch at startup.
   final packageInfo = await PackageInfo.fromPlatform();
 
+  const storePackageName = 'RubenGullatz.Twenty-preventeyestrain';
+  const sourcePackageName = 'rubengullatz.twenty';
+  final executablePath = Platform.resolvedExecutable;
+  final packageName = executablePath.contains(storePackageName)
+      ? storePackageName
+      : sourcePackageName;
+
   launchAtStartup.setup(
     appName: packageInfo.appName,
-    appPath: Platform.resolvedExecutable,
+    appPath: executablePath,
     // Set packageName parameter to support MSIX.
-    packageName: 'rubengullatz.twenty',
+    packageName: packageName,
   );
 
   // setup notifications
