@@ -49,14 +49,22 @@ Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
   final executablePath = Platform.resolvedExecutable;
   final packageName = executablePath.contains(storePackageName)
       ? storePackageName
-      : sourcePackageName;
+      : executablePath.contains(sourcePackageName)
+          ? sourcePackageName
+          : null;
 
-  launchAtStartup.setup(
-    appName: packageInfo.appName,
-    appPath: executablePath,
-    // Set packageName parameter to support MSIX.
-    packageName: packageName,
-  );
+  if (packageName == null) {
+    launchAtStartup.setup(
+      appName: packageInfo.appName,
+      appPath: executablePath,
+    );
+  } else {
+    launchAtStartup.setup(
+      appName: packageInfo.appName,
+      appPath: executablePath,
+      packageName: packageName,
+    );
+  }
 
   // setup notifications
   await localNotifier.setup(appName: 'twenty');

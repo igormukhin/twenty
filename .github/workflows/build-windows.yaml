@@ -43,8 +43,30 @@ jobs:
             -DestinationPath twenty-windows-release.zip `
             -Force
 
+      - name: Install Inno Setup
+        run: choco install innosetup --yes --no-progress
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          $version = (Select-String -Path pubspec.yaml -Pattern '^version:\s*(.+)$').Matches[0].Groups[1].Value.Trim()
+          $sourceDir = (Resolve-Path 'build\windows\x64\runner\Release').Path
+          $outputDir = Join-Path $PWD 'dist\windows'
+          New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" `
+            "installer\windows\twenty.iss" `
+            "/DMyAppVersion=$version" `
+            "/DSourceDir=$sourceDir" `
+            "/DOutputDir=$outputDir"
+
       - name: Upload release artifact
         uses: actions/upload-artifact@v4
         with:
           name: twenty-windows-release
           path: twenty-windows-release.zip
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: twenty-windows-installer
+          path: dist/windows/TwentySetup.exe
