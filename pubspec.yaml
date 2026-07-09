@@ -1,6 +1,6 @@
 name: twenty
 description: An open-source Windows application designed to help you follow the 20-20-20 rule.
-version: 1.0.0
+version: 1.1.0
 publish_to: none
 
 environment:
@@ -48,5 +48,5 @@ msix_config:
   display_name: Twenty
   publisher_display_name: Ruben Gullatz
   identity_name: rubengullatz.twenty
-  msix_version: 1.0.0.0
+  msix_version: 1.1.0.0
   logo_path: E:\projects\flutter\twenty\assets\icon\logo_large.png
