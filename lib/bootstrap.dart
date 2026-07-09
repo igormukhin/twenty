@@ -6,11 +6,11 @@ import 'package:bloc/bloc.dart';
 import 'package:clever_settings_flutter/clever_settings_flutter.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
-import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:system_theme/system_theme.dart';
 import 'package:twenty/settings/settings.dart';
+import 'package:twenty/startup/startup_registration.dart';
 import 'package:window_manager/window_manager.dart';
 
 class AppBlocObserver extends BlocObserver {
@@ -53,18 +53,11 @@ Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
           ? sourcePackageName
           : null;
 
-  if (packageName == null) {
-    launchAtStartup.setup(
-      appName: packageInfo.appName,
-      appPath: executablePath,
-    );
-  } else {
-    launchAtStartup.setup(
-      appName: packageInfo.appName,
-      appPath: executablePath,
-      packageName: packageName,
-    );
-  }
+  startupRegistration.setup(
+    appName: packageInfo.appName,
+    appPath: executablePath,
+    packageName: packageName,
+  );
 
   // setup notifications
   await localNotifier.setup(appName: 'twenty');

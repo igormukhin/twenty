@@ -4,12 +4,12 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:twenty/l10n/l10n.dart';
 import 'package:twenty/notification/repository/notification_repository.dart';
 import 'package:twenty/onboarding/view/onboarding_page.dart';
 import 'package:twenty/rule/bloc/rule_bloc.dart';
 import 'package:twenty/settings/settings.dart';
+import 'package:twenty/startup/startup_registration.dart';
 import 'package:twenty/util/app_icon.dart';
 import 'package:twenty/util/fluid_enter.dart';
 import 'package:twenty/util/fluid_spring.dart';
@@ -30,7 +30,7 @@ class InfoPage extends StatelessWidget {
       await context.read<NotificationRepository>().showInfoNotification();
 
       try {
-        await launchAtStartup.enable();
+        await startupRegistration.enable();
       } on Object catch (error, stackTrace) {
         log(
           'Failed to enable launch at startup',

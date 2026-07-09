@@ -4,13 +4,13 @@ import 'package:fluent_ui/fluent_ui.dart' hide FluentIcons;
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:twenty/home/view/custom_window_caption.dart';
 import 'package:twenty/home/view/settings_tile.dart';
 import 'package:twenty/l10n/l10n.dart';
 import 'package:twenty/rule/bloc/rule_bloc.dart';
 import 'package:twenty/settings/settings.dart';
+import 'package:twenty/startup/startup_registration.dart';
 import 'package:twenty/window/repository/window_repository.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -228,7 +228,7 @@ class _LaunchAtStartupTileState extends State<_LaunchAtStartupTile> {
           child: Text(t.launchAtStartup),
         ),
         FutureBuilder(
-          future: launchAtStartup.isEnabled(),
+          future: startupRegistration.isEnabled(),
           builder: (context, snapshot) {
             final enabled = snapshot.data ?? false;
 
@@ -237,9 +237,9 @@ class _LaunchAtStartupTileState extends State<_LaunchAtStartupTile> {
               onChanged: snapshot.hasData
                   ? (value) async {
                       if (value) {
-                        await launchAtStartup.enable();
+                        await startupRegistration.enable();
                       } else {
-                        await launchAtStartup.disable();
+                        await startupRegistration.disable();
                       }
                       setState(() {});
                     }
