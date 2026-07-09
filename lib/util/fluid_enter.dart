@@ -1,7 +1,7 @@
-import 'package:fluid_animations/fluid_animations.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:twenty/util/animated_enter.dart';
+import 'package:twenty/util/fluid_spring.dart';
 
 class FluidEnter extends StatefulWidget {
   const FluidEnter({

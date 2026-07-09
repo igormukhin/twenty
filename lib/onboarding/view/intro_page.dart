@@ -2,10 +2,10 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:fluid_animations/fluid_animations.dart';
 import 'package:twenty/l10n/l10n.dart';
 import 'package:twenty/onboarding/view/onboarding_page.dart';
 import 'package:twenty/util/fluid_enter.dart';
+import 'package:twenty/util/fluid_spring.dart';
 
 class IntroPage extends StatelessWidget {
   const IntroPage({super.key});

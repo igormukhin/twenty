@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:fluid_animations/fluid_animations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
@@ -13,6 +12,7 @@ import 'package:twenty/rule/bloc/rule_bloc.dart';
 import 'package:twenty/settings/settings.dart';
 import 'package:twenty/util/app_icon.dart';
 import 'package:twenty/util/fluid_enter.dart';
+import 'package:twenty/util/fluid_spring.dart';
 
 class InfoPage extends StatelessWidget {
   const InfoPage({super.key});
