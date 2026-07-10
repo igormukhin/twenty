@@ -28,6 +28,10 @@
     "@launchAtStartup": {
         "description": "Toggle to launch the application at startup"
     },
+    "startupRegistrationFailed": "Could not update launch at startup. Please try again.",
+    "@startupRegistrationFailed": {
+        "description": "Error shown when the launch at startup setting cannot be updated"
+    },
     "sounds": "Sounds",
     "@sounds": {
         "description": "Toggle to run activate and deactivate sounds"

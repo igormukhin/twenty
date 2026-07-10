@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:clever_settings/clever_settings.dart';
 import 'package:clever_settings_flutter/clever_settings_flutter.dart';
 import 'package:fluent_ui/fluent_ui.dart' hide FluentIcons;
@@ -202,21 +205,112 @@ class _RunSettings extends StatelessWidget {
             title: Text(t.startMinimized),
           ),
           const SizedBox(height: 16),
-          const _LaunchAtStartupTile(),
+          const LaunchAtStartupTile(),
         ],
       ),
     );
   }
 }
 
-class _LaunchAtStartupTile extends StatefulWidget {
-  const _LaunchAtStartupTile();
+class LaunchAtStartupTile extends StatefulWidget {
+  const LaunchAtStartupTile({
+    this.registration,
+    super.key,
+  });
+
+  final StartupRegistration? registration;
 
   @override
-  State<_LaunchAtStartupTile> createState() => _LaunchAtStartupTileState();
+  State<LaunchAtStartupTile> createState() => _LaunchAtStartupTileState();
 }
 
-class _LaunchAtStartupTileState extends State<_LaunchAtStartupTile> {
+class _LaunchAtStartupTileState extends State<LaunchAtStartupTile> {
+  bool? _enabled;
+  bool _updating = false;
+
+  StartupRegistration get _registration =>
+      widget.registration ?? startupRegistration;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_loadEnabled());
+  }
+
+  @override
+  void didUpdateWidget(LaunchAtStartupTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.registration != oldWidget.registration) {
+      _enabled = null;
+      unawaited(_loadEnabled());
+    }
+  }
+
+  Future<void> _loadEnabled() async {
+    try {
+      final enabled = await _registration.isEnabled();
+      if (mounted) setState(() => _enabled = enabled);
+    } on Object catch (error, stackTrace) {
+      log(
+        'Failed to read launch at startup state',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      if (mounted) setState(() => _enabled = false);
+    }
+  }
+
+  Future<void> _setEnabled(bool value) async {
+    final previousValue = _enabled ?? false;
+    setState(() => _updating = true);
+
+    try {
+      if (value) {
+        await _registration.enable();
+      } else {
+        await _registration.disable();
+      }
+
+      final enabled = await _registration.isEnabled();
+      if (enabled != value) {
+        throw StateError('Startup registration did not change.');
+      }
+      if (mounted) setState(() => _enabled = enabled);
+    } on Object catch (error, stackTrace) {
+      log(
+        'Failed to update launch at startup state',
+        error: error,
+        stackTrace: stackTrace,
+      );
+
+      var enabled = previousValue;
+      try {
+        enabled = await _registration.isEnabled();
+      } on Object catch (readError, readStackTrace) {
+        log(
+          'Failed to refresh launch at startup state',
+          error: readError,
+          stackTrace: readStackTrace,
+        );
+      }
+
+      if (mounted) {
+        setState(() => _enabled = enabled);
+        unawaited(
+          displayInfoBar(
+            context,
+            builder: (context, close) => InfoBar(
+              title: Text(context.l10n.startupRegistrationFailed),
+              severity: InfoBarSeverity.error,
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _updating = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = context.l10n;
@@ -227,25 +321,9 @@ class _LaunchAtStartupTileState extends State<_LaunchAtStartupTile> {
           style: FluentTheme.of(context).typography.body!,
           child: Text(t.launchAtStartup),
         ),
-        FutureBuilder(
-          future: startupRegistration.isEnabled(),
-          builder: (context, snapshot) {
-            final enabled = snapshot.data ?? false;
-
-            return ToggleSwitch(
-              checked: enabled,
-              onChanged: snapshot.hasData
-                  ? (value) async {
-                      if (value) {
-                        await startupRegistration.enable();
-                      } else {
-                        await startupRegistration.disable();
-                      }
-                      setState(() {});
-                    }
-                  : null,
-            );
-          },
+        ToggleSwitch(
+          checked: _enabled ?? false,
+          onChanged: _enabled != null && !_updating ? _setEnabled : null,
         ),
       ],
     );

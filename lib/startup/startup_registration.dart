@@ -1,11 +1,13 @@
-import 'dart:io';
-
 import 'package:launch_at_startup/launch_at_startup.dart';
+import 'package:twenty/startup/startup_registry.dart';
 
 final startupRegistration = StartupRegistration();
 
 class StartupRegistration {
-  static const _runKey = r'HKCU\Software\Microsoft\Windows\CurrentVersion\Run';
+  StartupRegistration({StartupRegistry? registry})
+      : _registry = registry ?? WindowsStartupRegistry();
+
+  final StartupRegistry _registry;
 
   String? _appName;
   String? _appPath;
@@ -35,17 +37,8 @@ class StartupRegistration {
     }
 
     final appName = _requireAppName();
-    final result = await Process.run(
-      'reg',
-      ['query', _runKey, '/v', appName],
-    );
-
-    if (result.exitCode != 0) {
-      return false;
-    }
-
-    final stdout = result.stdout.toString().toLowerCase();
-    return stdout.contains(_startupValue.toLowerCase());
+    final registeredValue = _registry.readValue(appName);
+    return registeredValue?.toLowerCase() == _startupValue.toLowerCase();
   }
 
   Future<void> enable() async {
@@ -55,29 +48,7 @@ class StartupRegistration {
     }
 
     final appName = _requireAppName();
-    final result = await Process.run(
-      'reg',
-      [
-        'add',
-        _runKey,
-        '/v',
-        appName,
-        '/t',
-        'REG_SZ',
-        '/d',
-        _startupValue,
-        '/f',
-      ],
-    );
-
-    if (result.exitCode != 0) {
-      throw ProcessException(
-        'reg',
-        ['add', _runKey],
-        result.stderr.toString(),
-        result.exitCode,
-      );
-    }
+    _registry.writeValue(appName, _startupValue);
   }
 
   Future<void> disable() async {
@@ -87,12 +58,7 @@ class StartupRegistration {
     }
 
     final appName = _requireAppName();
-    final result = await Process.run(
-      'reg',
-      ['delete', _runKey, '/v', appName, '/f'],
-    );
-
-    if (result.exitCode != 0) return;
+    _registry.deleteValue(appName);
   }
 
   bool get _usesPackageRegistration => _packageName != null;
